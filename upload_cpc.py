@@ -23,7 +23,7 @@ ftp.quit()
 df = pd.read_csv(
     f"csv/{file_yesterday}",
     sep=";",
-    encoding="ANSI",
+    encoding="latin-1",
     skiprows=np.arange(4),
     header=None,
 )
