@@ -15,7 +15,7 @@ cpc_files = ftp.nlst()
 
 # Gets the CPC file from yesterday at 01:00 (UTC offset)
 yesterday = (datetime.datetime.today() - datetime.timedelta(days=1)).strftime("%Y%m%d")
-cpc_yesterday = yesterday[2:4] + yesterday[4:6] + yesterday[6:8] + "01"
+cpc_yesterday = yesterday[2:4] + yesterday[4:6] + yesterday[6:8] + "23"
 file_yesterday = [s for s in cpc_files if cpc_yesterday in s][0]
 ftp.retrbinary("RETR " + file_yesterday, open(f"csv/{file_yesterday}", "wb").write)
 ftp.quit()
