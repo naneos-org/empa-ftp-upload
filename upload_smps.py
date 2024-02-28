@@ -13,38 +13,42 @@ ftp = ftplib.FTP(**CONF["ftp"])
 ftp.cwd(CONF["smps"]["ftp_folder"])
 smps_files = ftp.nlst()
 
-yesterday = (datetime.datetime.today() - datetime.timedelta(days=1)).strftime("%Y%m%d")
-file_yesterday = [s for s in smps_files if yesterday in s][0]
-
-ftp.retrbinary("RETR " + file_yesterday, open(f"csv/{file_yesterday}", "wb").write)
-ftp.quit()
-
-df = pd.read_csv(
-    f"csv/{file_yesterday}", sep=",", encoding="utf-8", skiprows=np.arange(52)
-)
-df["datetime"] = pd.to_datetime(
-    df["DateTime Sample Start"], format="%d/%m/%Y %H:%M:%S"
-) + pd.Timedelta(hours=-1)
-df.rename(
-    columns={
-        "Test Name": "location",
-        "Total Concentration (#/cm³)": "particle_number_concentration",
-    },
-    inplace=True,
-)
-df.set_index("datetime", inplace=True)
-influx_df = df[CONF["smps"]["cols"]]
-
-with InfluxDBClient(**CONF["influxdb"]["creds"]) as client:
-    write_api = client.write_api(write_options=SYNCHRONOUS)
-
-    res = write_api.write(
-        bucket=CONF["influxdb"]["bucket"],
-        org=CONF["influxdb"]["creds"]["org"],
-        record=influx_df,
-        data_frame_measurement_name=CONF["smps"]["measurement"],
-        data_frame_tag_columns=["location"],
-        data_frame_field_columns=[
-            c for c in influx_df.columns if c not in ["location"]
-        ],
+for i in range(1, 1):
+    yesterday = (datetime.datetime.today() - datetime.timedelta(days=i)).strftime(
+        "%Y%m%d"
     )
+    file_yesterday = [s for s in smps_files if yesterday in s][0]
+
+    ftp.retrbinary("RETR " + file_yesterday, open(f"csv/{file_yesterday}", "wb").write)
+
+    df = pd.read_csv(
+        f"csv/{file_yesterday}", sep=",", encoding="utf-8", skiprows=np.arange(52)
+    )
+    df["datetime"] = pd.to_datetime(
+        df["DateTime Sample Start"], format="%d/%m/%Y %H:%M:%S"
+    ) + pd.Timedelta(hours=-1)
+    df.rename(
+        columns={
+            "Test Name": "location",
+            "Total Concentration (#/cm³)": "particle_number_concentration",
+        },
+        inplace=True,
+    )
+    df.set_index("datetime", inplace=True)
+    influx_df = df[CONF["smps"]["cols"]]
+
+    with InfluxDBClient(**CONF["influxdb"]["creds"]) as client:
+        write_api = client.write_api(write_options=SYNCHRONOUS)
+
+        res = write_api.write(
+            bucket=CONF["influxdb"]["bucket"],
+            org=CONF["influxdb"]["creds"]["org"],
+            record=influx_df,
+            data_frame_measurement_name=CONF["smps"]["measurement"],
+            data_frame_tag_columns=["location"],
+            data_frame_field_columns=[
+                c for c in influx_df.columns if c not in ["location"]
+            ],
+        )
+
+ftp.quit()
