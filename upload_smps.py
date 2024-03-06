@@ -27,7 +27,6 @@ for i in range(1, 2):
         df = pd.read_csv(
             f"csv/{file_yesterday}", sep=",", encoding="utf-8", skiprows=np.arange(52)
         )
-        print(df.head())
         df["datetime"] = pd.to_datetime(
             df["DateTime Sample Start"], format="%d/%m/%Y %H:%M:%S"
         ) + pd.Timedelta(hours=-1)
