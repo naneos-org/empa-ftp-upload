@@ -19,7 +19,6 @@ for i in range(1, 2):
             "%Y%m%d"
         )
         file_yesterday = [s for s in smps_files if yesterday in s][0]
-        print(file_yesterday)
 
         ftp.retrbinary(
             "RETR " + file_yesterday, open(f"csv/{file_yesterday}", "wb").write
