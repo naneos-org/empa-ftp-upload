@@ -14,7 +14,7 @@ ftp.cwd(CONF["cpc"]["ftp_folder"])
 cpc_files = ftp.nlst()
 
 # Gets the CPC file from yesterday at 01:00 (UTC offset)
-for i in range(1, 1):
+for i in range(1, 2):
     yesterday = (datetime.datetime.today() - datetime.timedelta(days=i)).strftime(
         "%Y%m%d"
     )

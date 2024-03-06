@@ -1,3 +1,4 @@
 config.toml
 .venv
 csv/*.csv
+test_*
