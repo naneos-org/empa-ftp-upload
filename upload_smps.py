@@ -11,6 +11,9 @@ from helpers import resample_smps
 
 CONF = toml.load("config.toml")
 
+p2_diameters = [10, 16, 26, 43, 70, 114, 185, 300]
+p2_cols = [f"particle_number_{d}nm" for d in p2_diameters]
+
 ftp = ftplib.FTP(**CONF["ftp"])
 ftp.cwd(CONF["smps"]["ftp_folder"])
 smps_files = ftp.nlst()
@@ -62,7 +65,7 @@ for i in range(1, 2):
             axis=1,
             result_type="expand",
         )
-        df_resampled.columns = df_reduced.columns[2:]
+        df_resampled.columns = p2_cols
         df_resampled["serial_number"] = "smps_test"
 
         with InfluxDBClient(**CONF["influxdb"]["creds"]) as client:
