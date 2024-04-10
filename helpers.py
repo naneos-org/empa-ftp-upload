@@ -14,6 +14,15 @@ def resample_smps(
     row,
     size_cols,
 ):
+    """Takes a row of SMPS data and resamples it to 8 bins in the distribution of the p2 bins.
+
+    Args:
+        row (pd.Series): A row of SMPS data
+        size_cols (list): The columns of the SMPS data, as strings or numbers
+
+    Returns:
+        np.array: The resampled data"""
+
     values = np.zeros(8)
     num_cols = len(row)
     bin_num = 0
