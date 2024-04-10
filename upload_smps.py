@@ -52,7 +52,7 @@ for i in range(1, 2):
                 bucket=CONF["influxdb"]["bucket"],
                 org=CONF["influxdb"]["creds"]["org"],
                 record=df_influx,
-                data_frame_measurement_name=CONF["smps"]["measurement"],
+                data_frame_measurement_name=CONF["smps"]["p2_measurement"],
                 data_frame_tag_columns=["location"],
                 data_frame_field_columns=[
                     c for c in df_influx.columns if c not in ["location"]
@@ -66,7 +66,7 @@ for i in range(1, 2):
             result_type="expand",
         )
         df_resampled.columns = p2_cols
-        df_resampled["serial_number"] = "smps_test"
+        df_resampled["serial_number"] = f"SMPS_{df_reduced['location'].iloc[0]}"
 
         with InfluxDBClient(**CONF["influxdb"]["creds"]) as client:
             write_api = client.write_api(write_options=SYNCHRONOUS)
