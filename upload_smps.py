@@ -20,7 +20,7 @@ ftp.cwd(CONF["smps"]["ftp_folder"])
 smps_files = ftp.nlst()
 
 utc_offset = time.localtime().tm_gmtoff / 3600
-num_days = 7
+num_days = 1
 
 for i in range(1, num_days + 1):
     try:
@@ -38,7 +38,7 @@ for i in range(1, num_days + 1):
         )
         df["datetime"] = pd.to_datetime(
             df["DateTime Sample Start"], format="%d/%m/%Y %H:%M:%S"
-        ) + pd.Timedelta(hours=-utc_offset)
+        ) + pd.Timedelta(hours=-0h)
         df.rename(
             columns={
                 "Test Name": "location",
