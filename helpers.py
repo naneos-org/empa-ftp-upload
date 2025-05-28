@@ -1,4 +1,5 @@
 import math
+
 import numpy as np
 
 p2_min = 10

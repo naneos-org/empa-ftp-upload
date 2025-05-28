@@ -1,5 +1,6 @@
 import datetime
 import ftplib
+import time
 
 import numpy as np
 import pandas as pd
@@ -18,7 +19,10 @@ ftp = ftplib.FTP(**CONF["ftp"])
 ftp.cwd(CONF["smps"]["ftp_folder"])
 smps_files = ftp.nlst()
 
-for i in range(1, 2):
+utc_offset = time.localtime().tm_gmtoff / 3600
+num_days = 7
+
+for i in range(1, num_days + 1):
     try:
         yesterday = (datetime.datetime.today() - datetime.timedelta(days=i)).strftime(
             "%Y%m%d"
@@ -34,7 +38,7 @@ for i in range(1, 2):
         )
         df["datetime"] = pd.to_datetime(
             df["DateTime Sample Start"], format="%d/%m/%Y %H:%M:%S"
-        ) + pd.Timedelta(hours=-1)
+        ) + pd.Timedelta(hours=-utc_offset)
         df.rename(
             columns={
                 "Test Name": "location",
