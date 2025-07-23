@@ -38,7 +38,7 @@ for i in range(1, num_days + 1):
         )
         df["datetime"] = pd.to_datetime(
             df["DateTime Sample Start"], format="%d/%m/%Y %H:%M:%S"
-        ) + pd.Timedelta(hours=-0h)
+        ) + pd.Timedelta(hours=-0)
         df.rename(
             columns={
                 "Test Name": "location",

@@ -18,7 +18,7 @@ for i in range(1, 2):
     yesterday = (datetime.datetime.today() - datetime.timedelta(days=i)).strftime(
         "%Y%m%d"
     )
-    cpc_yesterday = yesterday[2:4] + yesterday[4:6] + yesterday[6:8] + "23"
+    cpc_yesterday = yesterday[2:4] + yesterday[4:6] + yesterday[6:8]
     file_yesterday = [s for s in cpc_files if cpc_yesterday in s][0]
     if not file_yesterday:
         continue
@@ -29,15 +29,24 @@ for i in range(1, 2):
         f"csv/{file_yesterday}",
         sep=";",
         encoding="latin-1",
-        skiprows=np.arange(4),
+        skiprows=np.arange(1, 4),
         header=None,
     )
-    df = df.drop(columns=[2, 3])
+    cpc_loc = df.iloc[0, 1]
+    df.drop(index=0, inplace=True)
+    df.drop(columns=[2, 3], inplace=True)
+    df.dropna(axis=0, how="any", inplace=True)
+
     df.columns = ["datetime", "particle_number_concentration"]
-    df["location"] = "Zuerich [16]"
+
+    df["location"] = cpc_loc
+    df["serial_number"] = cpc_loc
     df["datetime"] = pd.to_datetime(
         df["datetime"], format="%d.%m.%Y %H:%M"
     ) + pd.Timedelta(hours=-1)
+    df["particle_number_concentration"] = df["particle_number_concentration"].astype(
+        int
+    )
     df.set_index("datetime", inplace=True)
     df.drop(df.tail(1).index, inplace=True)
 
@@ -49,8 +58,10 @@ for i in range(1, 2):
             org=CONF["influxdb"]["creds"]["org"],
             record=df,
             data_frame_measurement_name="cpc",
-            data_frame_tag_columns=["location"],
-            data_frame_field_columns=[c for c in df.columns if c not in ["location"]],
+            data_frame_tag_columns=["location", "serial_number"],
+            data_frame_field_columns=[
+                c for c in df.columns if c not in ["location", "serial_number"]
+            ],
         )
 
 ftp.quit()
